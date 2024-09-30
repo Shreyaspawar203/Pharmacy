@@ -1,5 +1,6 @@
  import javax.swing.JOptionPane;
  import java.sql.*;
+ import dao.ConnectionProvider.*;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -13,13 +14,13 @@
 public class Profile extends javax.swing.JFrame {
 
     public String emailPattern = "^[a-zA-Z0-9]+[@]+[a-zA-Z0-9]+[.]+[a-zA-Z0-9]+$";
-    public String mobileNumberPattern = "^[0-9]*";
-    private String username = "";
+    public String mobileNumberPattern = "^[0-9]*$";
+    private String username= "";
 
     /**
      *
      * Creates new form Profile
-     */
+     */ 
     public Profile() {
         initComponents();
     }
@@ -40,7 +41,6 @@ public class Profile extends javax.swing.JFrame {
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JSeparator();
         jLabel2 = new javax.swing.JLabel();
         lblUsername = new javax.swing.JLabel();
@@ -53,29 +53,21 @@ public class Profile extends javax.swing.JFrame {
         jLabel7 = new javax.swing.JLabel();
         txtAddress = new javax.swing.JTextField();
         jButton2 = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
         jLabel8 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setUndecorated(true);
+        addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentShown(java.awt.event.ComponentEvent evt) {
+                formComponentShown(evt);
+            }
+        });
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 36)); // NOI18N
         jLabel1.setText("Profile");
         getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 24, -1, -1));
-
-        jButton1.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/close.png"))); // NOI18N
-        jButton1.addComponentListener(new java.awt.event.ComponentAdapter() {
-            public void componentShown(java.awt.event.ComponentEvent evt) {
-                jButton1ComponentShown(evt);
-            }
-        });
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
-        getContentPane().add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(818, 6, -1, -1));
         getContentPane().add(jSeparator1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 74, 850, 10));
 
         jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/profile.png"))); // NOI18N
@@ -123,35 +115,19 @@ public class Profile extends javax.swing.JFrame {
         });
         getContentPane().add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(444, 386, -1, -1));
 
+        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/close.png"))); // NOI18N
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+        getContentPane().add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(810, 10, -1, -1));
+
         jLabel8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/all_pages_background.png"))); // NOI18N
-        getContentPane().add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(-70, 0, 920, 500));
+        getContentPane().add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-        setVisible (false);
-    }//GEN-LAST:event_jButton1ActionPerformed
-
-    private void jButton1ComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_jButton1ComponentShown
-        // TODO add your handling code here:
-        try {
-            Connection con=dao.ConnectionProvider.main();
-            Statement st = con.createStatement();
-            ResultSet rs = st.executeQuery("select *from appuser where username='"+username+"'");
-            while(rs.next()){
-                txtName.setText(rs.getString("name"));
-                txtMobileNumber.setText(rs.getString("mobileNumber"));
-                txtEmail.setText(rs.getString("email"));
-                txtAddress.setText(rs.getString("address"));
-                lblUsername.setText(username);
-            }
-        }
-        catch (Exception e){
-            JOptionPane.showMessageDialog(null,e);
-        }
-    }//GEN-LAST:event_jButton1ComponentShown
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
@@ -175,7 +151,7 @@ public class Profile extends javax.swing.JFrame {
         }else{
             try{
                 Connection con=dao.ConnectionProvider.main();
-                PreparedStatement ps = con.prepareStatement("update appuser set name ?,mobileNumber=?,email=?,address=? where username=?");
+                PreparedStatement ps = con.prepareStatement("update appuser set name=?,mobileNumber=?,email=?,address=? where username=?");
                 ps.setString(1,name);
                 ps.setString(2,mobileNumber);
                 ps.setString(3,email);
@@ -191,6 +167,31 @@ public class Profile extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void formComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentShown
+        // TODO add your handling code here:
+        try{
+            Connection con = dao.ConnectionProvider.main();
+            Statement st=con.createStatement();
+            ResultSet rs = st.executeQuery("select *from appuser where username='"+username+"'");
+            while(rs.next()){
+            txtName.setText(rs.getString("name"));
+            txtMobileNumber.setText(rs.getString("mobileNumber"));
+            txtEmail.setText(rs.getString("email"));
+            txtAddress.setText(rs.getString("address"));
+            lblUsername.setText(username);
+            
+            }      
+        }
+        catch(Exception e){
+            JOptionPane.showMessageDialog(null, e);
+        } 
+    }//GEN-LAST:event_formComponentShown
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+         setVisible (false);
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments

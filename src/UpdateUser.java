@@ -15,15 +15,15 @@ import dao.ConnectionProvider.*;
  */
 public class UpdateUser extends javax.swing.JFrame {
 
-    private String emailPattern = "/^[a-zA-Z0-9]+[@]+[a-zA-Z0-9]+[.]+[a-zA-Z0-9]+$";
-    private String mobileNumberPattern = "^[0-9]*";
+    private String emailPattern = "^[a-zA-Z0-9]+[@]+[a-zA-Z0-9]+[.]+[a-zA-Z0-9]+$";
+    private String mobileNumberPattern = "^[0-9]*$";
 
     /**
      * Creates new form UpdateUser
-     */
+     */ 
     public UpdateUser() {
         initComponents();
-        setLocationRelative(null);
+        setLocationRelativeTo(null);
     }
 
     /**
@@ -154,14 +154,14 @@ public class UpdateUser extends javax.swing.JFrame {
         // TODO add your handling code here:
         int checkUserExist = 0;
         String username = txtUsername.getText();
-        if (username.equals("")) {
+        if (username.equals("")) { 
             JOptionPane.showMessageDialog(null, "Username field is required.");
         } else {
             SimpleDateFormat dFormat = new SimpleDateFormat("dd-MM-yyyy");
             try {
                 Connection con=dao.ConnectionProvider.main();
                 Statement st = con.createStatement();
-                ResultSet rs = st.executeQuery("select *from appuser where username='" + username + "'");
+                ResultSet rs = st.executeQuery("select *from appuser where username='" +username+"'");
                 while (rs.next()) {
                     txtUsername.setEditable(false);
                     checkUserExist = 1;
@@ -170,7 +170,7 @@ public class UpdateUser extends javax.swing.JFrame {
                     txtEmail.setText(rs.getString("email"));
                     txtAddress.setText(rs.getString("address"));
                     String dob = rs.getString("dob");
-                    if (dob != "") {
+                    if (dob !="") {
                         try {
                             dateDOB.setDate(dFormat.parse(dob));
                         } catch (Exception e) {
